@@ -1,6 +1,5 @@
 /**
  * Product Loader - Carrega dados do produto da API e renderiza na página
- * Design moderno dark mode
  */
 
 (function() {
@@ -41,10 +40,9 @@
 
     // Generate stars HTML
     function generateStars(rating) {
-        const fullStars = Math.floor(rating || 5);
         let stars = '';
-        for (let i = 0; i < 5; i++) {
-            stars += i < fullStars ? '★' : '☆';
+        for (let i = 1; i <= 5; i++) {
+            stars += i <= rating ? '★' : '☆';
         }
         return stars;
     }
@@ -52,7 +50,7 @@
     // Format specs as list
     function formatSpecs(specs) {
         if (!specs) return '';
-        return specs.split('\n').filter(l => l.trim()).map(line => `<li>${line}</li>`).join('');
+        return specs.split('\n').map(line => `<li>• ${line}</li>`).join('');
     }
 
     // Format includes as list
@@ -69,182 +67,178 @@
         document.getElementById('page-title').textContent = product.title;
         document.title = product.title;
 
-        // Calculate values
-        const discount = product.discount || Math.round(((product.priceOriginal - product.pricePromo) / product.priceOriginal) * 100);
-        const installments = product.installments || 3;
-        const installmentValue = (product.pricePromo / installments).toFixed(2);
-        const images = (product.images || []).filter(img => img);
-        
-        // Generate gallery slides
-        const gallerySlides = images.length > 0 
-            ? images.map((img, i) => `<div class="gallery-slide"><img src="${img}" alt="Imagem ${i + 1}"></div>`).join('')
-            : '<div class="gallery-slide" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);">Sem imagens</div>';
-        
-        // Generate gallery dots
-        const galleryDots = images.length > 1 
-            ? images.map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`).join('')
-            : '';
+        // Generate carousel images
+        const carouselImages = (product.images || []).filter(img => img).map((img, index) => `
+            <div class="carousel-item"><img src="${img}" alt="Imagem ${index + 1}"></div>
+        `).join('');
 
         // Generate reviews
         const reviewsHtml = (product.reviews || []).map(review => `
             <div class="review-item">
                 <div class="review-user">
                     <img src="images/blank-profile-picture-973460_640-150x150.webp" class="review-avatar" alt="${review.name}">
-                    <div class="review-user-info">
-                        <h4>${review.name || 'Cliente'}</h4>
-                        <div class="stars">${generateStars(review.rating)}</div>
+                    <div>
+                        <div class="review-name">${review.name || 'Cliente'}</div>
+                        <div class="review-stars">${generateStars(review.rating || 5)}</div>
                     </div>
                 </div>
                 <p class="review-text">${review.text || ''}</p>
-                ${review.image ? `<img src="${review.image}" class="review-image" alt="Foto">` : ''}
+                ${review.image ? `<img src="${review.image}" class="review-image" alt="Foto da avaliação">` : ''}
                 <div class="review-date">${review.date || ''}</div>
             </div>
         `).join('');
 
+        // Calculate discount
+        const discount = product.discount || Math.round(((product.priceOriginal - product.pricePromo) / product.priceOriginal) * 100);
+        
+        // Calculate installment value
+        const installments = product.installments || 3;
+        const installmentValue = product.installmentValue || (product.pricePromo / installments).toFixed(2);
+
         container.innerHTML = `
-            <!-- Header -->
-            <header class="header">
-                <div class="header-logo">
-                    <div class="header-logo-icon">🛒</div>
-                    <span class="header-logo-text">Shop</span>
-                </div>
-                <div class="header-badge">
-                    <span class="pulse"></span>
-                    <span>${discount}% OFF</span>
-                </div>
-            </header>
-
-            <div class="main-container">
-                <!-- Gallery -->
-                <div class="gallery">
-                    <div class="discount-tag">-${discount}% OFF</div>
-                    <div class="gallery-track" id="gallery-track">
-                        ${gallerySlides}
-                    </div>
-                    ${images.length > 1 ? `
-                        <button class="gallery-btn prev" onclick="prevSlide()">‹</button>
-                        <button class="gallery-btn next" onclick="nextSlide()">›</button>
-                        <div class="gallery-nav" id="gallery-nav">${galleryDots}</div>
-                    ` : ''}
-                </div>
-
-                <!-- Product Info -->
-                <div class="product-info">
-                    <h1 class="product-title">${product.title || 'Produto sem título'}</h1>
-                    <div class="product-rating">
-                        <span class="stars">${generateStars(5)}</span>
-                        <span class="rating-text">5.0 (${product.reviews?.length || 0} avaliações)</span>
-                        <span class="sold-badge">${product.sold || 0} vendidos</span>
+            <!-- Header Banner -->
+            <div class="header-banner">
+                <a href="${product.checkoutUrl || '#'}" style="width: 50%;">
+                    <img src="images/Logo%20Shopee%20White-d247f0f6.webp" alt="Logo">
+                </a>
+                <div class="container_banner">
+                    <span>1500 CUPONS DISPONÍVEIS</span>
+                    <div class="name_cupom">
+                        <h3>DAY WEEK</h3>
+                        <h5><span style="font-weight: bold;">|</span> ${discount}% OFF</h5>
                     </div>
                 </div>
-
-                <!-- Price Section -->
-                <div class="price-section">
-                    <div class="price-row">
-                        <span class="price-original">R$ ${product.priceOriginal || '0,00'}</span>
-                        <span class="price-current"><small>R$</small> ${product.pricePromo || '0,00'}</span>
-                    </div>
-                    <div class="installments">
-                        ou <strong>${installments}x de R$ ${installmentValue}</strong> sem juros
-                    </div>
-                    
-                    <div class="countdown-section">
-                        <span class="countdown-label">Oferta termina em</span>
-                        <div class="countdown">
-                            <span class="countdown-item" id="countdown-hours">00</span>
-                            <span class="countdown-item" id="countdown-minutes">00</span>
-                            <span class="countdown-item" id="countdown-seconds">00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Benefits -->
-                <div class="benefits">
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🚚</div>
-                        <div class="benefit-text">
-                            <h4>Frete Grátis</h4>
-                            <p>Entrega rápida para todo Brasil</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">🔒</div>
-                        <div class="benefit-text">
-                            <h4>Compra Segura</h4>
-                            <p>Seus dados protegidos</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">✅</div>
-                        <div class="benefit-text">
-                            <h4>Garantia de 90 dias</h4>
-                            <p>Devolução sem complicação</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Seller -->
-                <div class="seller-section">
-                    <img src="${product.sellerLogo || 'images/logolar-150x150.png'}" class="seller-avatar" alt="${product.sellerName || 'Vendedor'}">
-                    <div class="seller-info">
-                        <h3>${product.sellerName || 'Loja Oficial'}</h3>
-                        <p>${product.sellerLocation || 'Brasil'}</p>
-                    </div>
-                    <div class="seller-badge">
-                        <span>✓</span> Verificado
-                    </div>
-                </div>
-
-                <!-- Description -->
-                <div class="description">
-                    <div class="description-header">
-                        <span>📋</span>
-                        <h2>Descrição</h2>
-                    </div>
-                    <div class="description-content">
-                        ${product.descTitle ? `<h3>${product.descTitle}</h3>` : ''}
-                        ${product.description ? `<p>${product.description}</p>` : ''}
-                        
-                        ${product.specs ? `<ul>${formatSpecs(product.specs)}</ul>` : ''}
-                        
-                        ${product.idealFor ? `<p><strong>Ideal para:</strong> ${product.idealFor}</p>` : ''}
-                        ${product.usage ? `<p><strong>Utilização:</strong> ${product.usage}</p>` : ''}
-                        ${product.includes ? `<p><strong>Inclui:</strong> ${formatIncludes(product.includes)}</p>` : ''}
-
-                        <div class="guarantee-box">
-                            <h4>🛡️ NOSSA GARANTIA</h4>
-                            <p><strong>📦 Envio seguro:</strong> Rastreamento em tempo real + cobertura de seguro.</p>
-                            <p><strong>💰 Garantia de devolução:</strong> Se chegar danificado, devolvemos seu dinheiro.</p>
-                            <p><strong>⭐ Suporte Premium:</strong> Atendimento prioritário por 90 dias.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reviews -->
-                ${(product.reviews && product.reviews.length > 0) ? `
-                    <div class="reviews-section">
-                        <div class="reviews-header">
-                            <h2>Avaliações</h2>
-                            <div class="reviews-score">
-                                <span class="stars">${generateStars(5)}</span>
-                                <span>(${product.reviews.length})</span>
-                            </div>
-                        </div>
-                        ${reviewsHtml}
-                    </div>
-                ` : ''}
             </div>
 
-            <!-- Fixed CTA -->
-            <div class="cta-fixed">
-                <a href="${product.checkoutUrl || '#'}" class="cta-button">
-                    Comprar Agora - R$ ${product.pricePromo || '0,00'}
+            <!-- Fixed Buttons -->
+            <div class="fixed-buttons">
+                <a href="${product.checkoutUrl || '#'}">
+                    <img src="images/chat.png" alt="Chat">
+                </a>
+                <a href="${product.checkoutUrl || '#'}">
+                    <img src="images/cart.png" alt="Carrinho">
                 </a>
             </div>
+
+            <!-- Carousel -->
+            <div class="carousel">
+                <button class="carousel-btn carousel-prev" onclick="prevSlide()">‹</button>
+                <div class="carousel-track" id="carousel-track">
+                    ${carouselImages || '<div class="carousel-item"><div style="padding: 50px; text-align: center; color: #999;">Sem imagens</div></div>'}
+                </div>
+                <button class="carousel-btn carousel-next" onclick="nextSlide()">›</button>
+            </div>
+
+            <!-- Price Section -->
+            <div class="price-section">
+                <div class="price-row">
+                    <span class="price-original">R$ ${product.priceOriginal || '0,00'}</span>
+                    <span class="discount-badge">-<strong>${discount}%</strong></span>
+                </div>
+                <div class="price-promo">
+                    <span>R$</span>${product.pricePromo || '0,00'}
+                </div>
+                <div class="promo-badge">
+                    <img src="images/promo-relampago.png" alt="Promoção Relâmpago">
+                </div>
+                <div class="sold-count">${product.sold || 0} Vendidos</div>
+            </div>
+
+            <!-- Installments -->
+            <div class="installments-section">
+                <div class="installments-text">
+                    Em até <strong>${installments}x R$${installmentValue}</strong>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 12px; color: #666;">TERMINA EM:</span>
+                    <div class="countdown">
+                        <span class="countdown-item" id="countdown-hours">00</span>
+                        <span class="countdown-item" id="countdown-minutes">00</span>
+                        <span class="countdown-item" id="countdown-seconds">00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Title -->
+            <div class="product-title-section">
+                <span class="product-tag">Indicado</span>
+                <span class="product-title">${product.title || 'Produto sem título'}</span>
+            </div>
+
+            <!-- Product Features Banner -->
+            <div style="background: #fff; padding: 10px;">
+                <img src="images/Rev-1024x61.png" alt="Características" style="width: 100%;">
+            </div>
+
+            <!-- Shipping -->
+            <div class="shipping-section">
+                <img src="images/truck.png" alt="Frete">
+                <div class="shipping-text">
+                    <strong>Frete:</strong> <span>Grátis</span>
+                </div>
+            </div>
+
+            <!-- Seller -->
+            <div class="seller-section">
+                <img src="${product.sellerLogo || 'images/logolar-150x150.png'}" class="seller-logo" alt="${product.sellerName || 'Vendedor'}">
+                <div class="seller-info">
+                    <h3>${product.sellerName || 'Shopee Brasil'}</h3>
+                    <p>${product.sellerLocation || ''}</p>
+                </div>
+            </div>
+
+            <div class="seller-stats" style="background: #fff; padding: 10px;">
+                <img src="images/aval-vend-1024x100.png" alt="Avaliação do Vendedor" style="width: 100%;">
+            </div>
+
+            <!-- Description -->
+            <div class="description-section">
+                <h2>Descrição</h2>
+                <div class="description-content">
+                    ${product.descTitle ? `<h3>${product.descTitle}</h3>` : ''}
+                    ${product.description ? `<p>${product.description}</p>` : ''}
+                    
+                    ${product.specs ? `
+                        <ul style="margin-top: 10px;">
+                            ${formatSpecs(product.specs)}
+                        </ul>
+                    ` : ''}
+
+                    ${product.idealFor ? `<p><strong>• Ideal para:</strong> ${product.idealFor}</p>` : ''}
+                    ${product.usage ? `<p><strong>• Utilização:</strong> ${product.usage}</p>` : ''}
+                    ${product.includes ? `<p><strong>• Inclui:</strong> ${formatIncludes(product.includes)}</p>` : ''}
+
+                    <p><strong>• Pagamento:</strong> em até <span style="color:#ee4d2d;"><strong>${installments}x sem juros</strong></span> no cartão</p>
+                    <p><strong>• Frete Grátis</strong> com rastreio atualizado</p>
+
+                    <div class="guarantee-box">
+                        <p style="text-align: center;"><strong>NOSSA GARANTIA</strong></p>
+                        <p>📦 <strong>Envio seguro:</strong> Cada pedido inclui detalhes de rastreamento em tempo real e cobertura de seguro.</p>
+                        <p>💰 <strong>Garantia de devolução:</strong> Se seus itens chegarem danificados ou apresentarem defeito dentro de 30 dias, teremos o prazer de emitir uma substituição ou reembolso.</p>
+                        <p style="color: #ee4d2d;"><strong>• Garantia de 90 dias com Suporte Premium.</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews -->
+            ${(product.reviews && product.reviews.length > 0) ? `
+                <div class="reviews-section">
+                    <div class="review-header">
+                        <img src="images/aval-nota-1024x242.png" alt="Avaliações">
+                    </div>
+                    ${reviewsHtml}
+                </div>
+            ` : ''}
+
+            <!-- Footer space -->
+            <div class="footer-space"></div>
+
+            <!-- Fixed Buy Button -->
+            <a href="${product.checkoutUrl || '#'}" class="btn-comprar-fixo">Comprar agora</a>
         `;
 
         // Initialize carousel
-        initGallery(images.length);
+        initCarousel();
         
         // Initialize countdown
         initCountdown();
@@ -255,85 +249,71 @@
         const container = document.getElementById('product-container');
         container.innerHTML = `
             <div class="error-message">
-                <h2>😕 Produto não encontrado</h2>
+                <h2>Produto não encontrado</h2>
                 <p>${message}</p>
-                <p><a href="index.html">← Voltar para a página inicial</a></p>
+                <p style="margin-top: 20px;">
+                    <a href="index.html">← Voltar para a página inicial</a>
+                </p>
             </div>
         `;
     }
 
-    // Gallery functionality
+    // Carousel functionality
     let currentSlide = 0;
     let totalSlides = 0;
 
-    function initGallery(slides) {
-        totalSlides = slides;
-        
-        // Add touch support
-        const track = document.getElementById('gallery-track');
-        if (track && totalSlides > 1) {
-            let startX = 0;
-            let isDragging = false;
-            
-            track.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-                isDragging = true;
-            });
-            
-            track.addEventListener('touchend', (e) => {
-                if (!isDragging) return;
-                const endX = e.changedTouches[0].clientX;
-                const diff = startX - endX;
-                
-                if (Math.abs(diff) > 50) {
-                    if (diff > 0) {
-                        window.nextSlide();
-                    } else {
-                        window.prevSlide();
-                    }
-                }
-                isDragging = false;
-            });
+    function initCarousel() {
+        const track = document.getElementById('carousel-track');
+        if (track) {
+            totalSlides = track.children.length;
         }
-        
-        // Add dot click handlers
-        const dots = document.querySelectorAll('.gallery-dot');
-        dots.forEach((dot, i) => {
-            dot.addEventListener('click', () => goToSlide(i));
-        });
     }
 
     window.nextSlide = function() {
         currentSlide = (currentSlide + 1) % totalSlides;
-        updateGallery();
+        updateCarousel();
     };
 
     window.prevSlide = function() {
         currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        updateGallery();
+        updateCarousel();
     };
 
-    function goToSlide(index) {
-        currentSlide = index;
-        updateGallery();
-    }
-
-    function updateGallery() {
-        const track = document.getElementById('gallery-track');
+    function updateCarousel() {
+        const track = document.getElementById('carousel-track');
         if (track) {
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
-        
-        // Update dots
-        const dots = document.querySelectorAll('.gallery-dot');
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === currentSlide);
-        });
+    }
+
+    // Touch support for carousel
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].clientX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                window.nextSlide();
+            } else {
+                window.prevSlide();
+            }
+        }
     }
 
     // Countdown timer
     function initCountdown() {
-        let totalSeconds = 600; // 10 minutes
+        // Set countdown to 10 minutes from now
+        let totalSeconds = 600;
 
         function updateCountdown() {
             const hours = Math.floor(totalSeconds / 3600);
@@ -352,6 +332,7 @@
                 totalSeconds--;
                 setTimeout(updateCountdown, 1000);
             } else {
+                // Reset countdown
                 totalSeconds = 600;
                 updateCountdown();
             }
@@ -368,6 +349,10 @@
             showError('Nenhum produto especificado. Use ?slug=nome-do-produto na URL.');
             return;
         }
+
+        // Show loading state
+        const container = document.getElementById('product-container');
+        container.innerHTML = '<div class="loading">Carregando produto...</div>';
 
         const product = await fetchProductBySlug(slug);
         

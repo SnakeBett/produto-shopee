@@ -10,13 +10,9 @@
       "maxDuration": 30
     }
   },
-  "routes": [
-    { "src": "/api/products", "dest": "/api/products.js" },
-    { "src": "/api/upload", "dest": "/api/upload.js" },
-    { "handle": "filesystem" },
-    { "src": "/admin/?", "dest": "/admin/index.html" },
-    { "src": "/produto/?", "dest": "/produto.html" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/produto", "destination": "/produto.html" }
   ],
   "headers": [
     {

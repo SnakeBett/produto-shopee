@@ -975,16 +975,13 @@
                 <div class="products-grid" id="products-list"></div>
             </section>
 
-            <!-- Editor Section -->
+            <!-- Editor Section - Simplificado -->
             <section id="section-editor" class="form-section">
                 <div class="header">
                     <h1 class="page-title" id="editor-title">Novo Produto</h1>
                     <div style="display: flex; gap: 10px;">
                         <button class="btn btn-secondary" onclick="previewProduct()">
                             <span>👁️</span> Preview
-                        </button>
-                        <button class="btn btn-secondary" onclick="saveDraft()">
-                            <span>💾</span> Salvar Rascunho
                         </button>
                         <button class="btn btn-primary" onclick="saveProduct()">
                             <span>✓</span> Publicar
@@ -993,165 +990,71 @@
                 </div>
 
                 <div class="card">
-                    <div class="tabs">
-                        <button class="tab-btn active" onclick="showTab('basic', this)">Informacoes Basicas</button>
-                        <button class="tab-btn" onclick="showTab('images', this)">Imagens</button>
-                        <button class="tab-btn" onclick="showTab('description', this)">Descricao</button>
-                        <button class="tab-btn" onclick="showTab('seller', this)">Vendedor</button>
-                        <button class="tab-btn" onclick="showTab('reviews', this)">Avaliacoes</button>
-                    </div>
-
-                    <!-- Basic Info Tab -->
-                    <div id="tab-basic" class="tab-content active">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Slug (URL)</label>
-                                <input type="text" class="form-control" id="product-slug" placeholder="ex: revolver-co2-708s">
+                    <!-- Imagem do Produto -->
+                    <div class="form-group" style="margin-bottom: 30px;">
+                        <label class="form-label" style="font-size: 16px; margin-bottom: 15px;">Imagem do Produto</label>
+                        <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+                            <div class="image-upload-box" id="main-image-box" onclick="document.getElementById('image-file-input').click()" style="width: 200px; height: 200px;">
+                                <span class="upload-icon">📷</span>
+                                <span class="upload-text">Clique para adicionar</span>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Status</label>
-                                <select class="form-control" id="product-status">
-                                    <option value="active">Ativo</option>
-                                    <option value="draft">Rascunho</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Titulo do Produto</label>
-                            <input type="text" class="form-control" id="product-title" placeholder="Nome completo do produto">
-                        </div>
-
-                        <div class="form-row form-row-3">
-                            <div class="form-group">
-                                <label class="form-label">Preco Original (R$)</label>
-                                <input type="number" step="0.01" class="form-control" id="product-price-original" placeholder="999.90">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Preco Promocional (R$)</label>
-                                <input type="number" step="0.01" class="form-control" id="product-price-promo" placeholder="67.90">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Desconto (%)</label>
-                                <input type="text" class="form-control" id="product-discount" placeholder="Calculado automaticamente" readonly>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Parcelas</label>
-                                <input type="number" class="form-control" id="product-installments" placeholder="3" value="3">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Valor da Parcela (R$)</label>
-                                <input type="text" class="form-control" id="product-installment-value" placeholder="Calculado automaticamente" readonly>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Quantidade Vendidos</label>
-                                <input type="number" class="form-control" id="product-sold" placeholder="2799">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Link do Checkout</label>
-                                <input type="url" class="form-control" id="product-checkout" placeholder="https://checkout.exemplo.com/...">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Images Tab -->
-                    <div id="tab-images" class="tab-content">
-                        <p style="color: var(--text-secondary); margin-bottom: 20px;">Adicione ate 6 imagens para o carrossel do produto. Faca upload de arquivos ou cole URLs.</p>
-                        
-                        <div class="images-grid" id="images-container">
-                            <!-- Image boxes will be generated by JS -->
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">Upload de Imagem</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="file" id="image-file-input" accept="image/*" style="display: none;" onchange="uploadImageFile(event)">
-                                    <button class="btn btn-primary" onclick="document.getElementById('image-file-input').click()" id="upload-btn">
-                                        <span>📤</span> Escolher Arquivo
-                                    </button>
-                                    <span id="upload-status" style="color: var(--text-secondary); font-size: 12px;"></span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Ou Cole a URL</label>
+                            <input type="file" id="image-file-input" accept="image/*" style="display: none;" onchange="uploadImageFile(event)">
+                            <div style="flex: 1; min-width: 200px;">
+                                <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 13px;">Ou cole a URL da imagem:</p>
                                 <div style="display: flex; gap: 10px;">
                                     <input type="url" class="form-control" id="image-url-input" placeholder="https://exemplo.com/imagem.jpg">
                                     <button class="btn btn-secondary" onclick="addImageUrl()">Adicionar</button>
                                 </div>
+                                <span id="upload-status" style="color: var(--text-secondary); font-size: 12px; margin-top: 8px; display: block;"></span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Description Tab -->
-                    <div id="tab-description" class="tab-content">
-                        <div class="form-group">
-                            <label class="form-label">Titulo da Descricao</label>
-                            <input type="text" class="form-control" id="product-desc-title" placeholder="Revolver de Pressao a Gas CO2...">
-                        </div>
+                    <!-- Nome do Produto -->
+                    <div class="form-group">
+                        <label class="form-label">Nome do Produto *</label>
+                        <input type="text" class="form-control" id="product-title" placeholder="Ex: Fone Bluetooth Premium com Cancelamento de Ruido">
+                    </div>
 
+                    <!-- Precos -->
+                    <div class="form-row" style="margin-top: 20px;">
                         <div class="form-group">
-                            <label class="form-label">Descricao Principal</label>
-                            <textarea class="form-control" id="product-description" placeholder="Descricao detalhada do produto..."></textarea>
+                            <label class="form-label">Preco Original (R$)</label>
+                            <input type="number" step="0.01" class="form-control" id="product-price-original" placeholder="299.90">
                         </div>
-
                         <div class="form-group">
-                            <label class="form-label">Especificacoes (uma por linha)</label>
-                            <textarea class="form-control" id="product-specs" placeholder="Sistema de propulsao: CO2&#10;Tipo de municao: Esferas metalicas 4.5mm&#10;Cano: 2&quot;"></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Ideal para</label>
-                                <input type="text" class="form-control" id="product-ideal" placeholder="Defesa pessoal, atiradores...">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Utilizacao</label>
-                                <input type="text" class="form-control" id="product-usage" placeholder="Simples, nao necessita experiencia">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">O que Inclui</label>
-                            <textarea class="form-control" id="product-includes" placeholder="1x Revolver&#10;6x Cartuchos&#10;1x Manual"></textarea>
+                            <label class="form-label">Preco Promocional (R$) *</label>
+                            <input type="number" step="0.01" class="form-control" id="product-price-promo" placeholder="149.90">
                         </div>
                     </div>
 
-                    <!-- Seller Tab -->
-                    <div id="tab-seller" class="tab-content">
-                        <div class="form-group">
-                            <label class="form-label">Logo do Vendedor (URL)</label>
-                            <input type="url" class="form-control" id="seller-logo" placeholder="https://exemplo.com/logo.png">
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Nome da Loja</label>
-                                <input type="text" class="form-control" id="seller-name" placeholder="Shopee Brasil">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Localizacao</label>
-                                <input type="text" class="form-control" id="seller-location" placeholder="Guaruja, Sao Paulo">
-                            </div>
-                        </div>
+                    <!-- Descricao -->
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="form-label">Descricao do Produto</label>
+                        <textarea class="form-control" id="product-description" placeholder="Descreva o produto de forma atrativa..." style="min-height: 150px;"></textarea>
                     </div>
 
-                    <!-- Reviews Tab -->
-                    <div id="tab-reviews" class="tab-content">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <p style="color: var(--text-secondary);">Adicione avaliacoes de clientes</p>
-                            <button class="btn btn-primary btn-sm" onclick="addReview()">+ Adicionar Avaliacao</button>
-                        </div>
-
-                        <div id="reviews-container"></div>
+                    <!-- Link do Checkout -->
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="form-label">Link do Checkout *</label>
+                        <input type="url" class="form-control" id="product-checkout" placeholder="https://checkout.superpromos.store/...">
                     </div>
+
+                    <!-- Campos ocultos para valores padrao -->
+                    <input type="hidden" id="product-slug">
+                    <input type="hidden" id="product-status" value="active">
+                    <input type="hidden" id="product-discount">
+                    <input type="hidden" id="product-installments" value="3">
+                    <input type="hidden" id="product-installment-value">
+                    <input type="hidden" id="product-sold" value="2847">
+                    <input type="hidden" id="product-desc-title">
+                    <input type="hidden" id="product-specs">
+                    <input type="hidden" id="product-ideal">
+                    <input type="hidden" id="product-usage">
+                    <input type="hidden" id="product-includes">
+                    <input type="hidden" id="seller-logo">
+                    <input type="hidden" id="seller-name" value="Shopee Brasil">
+                    <input type="hidden" id="seller-location" value="Sao Paulo, SP">
                 </div>
             </section>
 
@@ -1359,18 +1262,7 @@
             }
         }
 
-        function showTab(tabName, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabName).classList.add('active');
-            if (btn) {
-                btn.classList.add('active');
-            } else {
-                // Find the button by tab name
-                document.querySelector(`[onclick*="showTab('${tabName}'"]`).classList.add('active');
-            }
-        }
+        // Funcao de tabs removida - painel simplificado
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
@@ -1489,15 +1381,6 @@
             clearForm();
             showSection('editor');
             initImagesGrid();
-            renderReviews();
-            resetTabs();
-        }
-
-        function resetTabs() {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-basic').classList.add('active');
-            document.querySelector('.tab-btn').classList.add('active');
         }
 
         async function editProduct(id) {
@@ -1513,35 +1396,19 @@
             currentProductId = id;
             document.getElementById('editor-title').textContent = 'Editar Produto';
             
-            // Fill form
+            // Fill form - apenas campos essenciais
             document.getElementById('product-slug').value = product.slug || '';
-            document.getElementById('product-status').value = product.status || 'draft';
             document.getElementById('product-title').value = product.title || '';
             document.getElementById('product-price-original').value = product.priceOriginal || '';
             document.getElementById('product-price-promo').value = product.pricePromo || '';
-            document.getElementById('product-installments').value = product.installments || 3;
-            document.getElementById('product-sold').value = product.sold || '';
-            document.getElementById('product-checkout').value = product.checkoutUrl || '';
-            
-            document.getElementById('product-desc-title').value = product.descTitle || '';
             document.getElementById('product-description').value = product.description || '';
-            document.getElementById('product-specs').value = product.specs || '';
-            document.getElementById('product-ideal').value = product.idealFor || '';
-            document.getElementById('product-usage').value = product.usage || '';
-            document.getElementById('product-includes').value = product.includes || '';
-            
-            document.getElementById('seller-logo').value = product.sellerLogo || '';
-            document.getElementById('seller-name').value = product.sellerName || '';
-            document.getElementById('seller-location').value = product.sellerLocation || '';
+            document.getElementById('product-checkout').value = product.checkoutUrl || '';
 
             productImages = product.images || [];
             productReviews = product.reviews || [];
 
-            calculateDiscount();
             showSection('editor');
             initImagesGrid();
-            renderReviews();
-            resetTabs();
         }
 
         async function duplicateProduct(id) {
@@ -1610,31 +1477,50 @@
 
         function clearForm() {
             document.getElementById('product-slug').value = '';
-            document.getElementById('product-status').value = 'active';
             document.getElementById('product-title').value = '';
             document.getElementById('product-price-original').value = '';
             document.getElementById('product-price-promo').value = '';
-            document.getElementById('product-discount').value = '';
-            document.getElementById('product-installments').value = '3';
-            document.getElementById('product-installment-value').value = '';
-            document.getElementById('product-sold').value = '';
-            document.getElementById('product-checkout').value = '';
-            
-            document.getElementById('product-desc-title').value = '';
             document.getElementById('product-description').value = '';
-            document.getElementById('product-specs').value = '';
-            document.getElementById('product-ideal').value = '';
-            document.getElementById('product-usage').value = '';
-            document.getElementById('product-includes').value = '';
-            
-            document.getElementById('seller-logo').value = '';
-            document.getElementById('seller-name').value = 'Shopee Brasil';
-            document.getElementById('seller-location').value = '';
+            document.getElementById('product-checkout').value = '';
 
             productImages = [];
             productReviews = [];
-            renderReviews();
         }
+
+        // Valores padrao para todos os produtos
+        const DEFAULT_VALUES = {
+            sellerLogo: 'images/logolar.png',
+            sellerName: 'Shopee Brasil',
+            sellerLocation: 'Sao Paulo, SP',
+            sold: 2847,
+            installments: 3,
+            reviews: [
+                {
+                    id: 'rev_default_1',
+                    name: 'Maria S.',
+                    rating: 5,
+                    text: 'Produto excelente! Chegou antes do prazo e veio muito bem embalado. Recomendo!',
+                    image: '',
+                    date: '15-01-26 14:32'
+                },
+                {
+                    id: 'rev_default_2',
+                    name: 'Carlos A.',
+                    rating: 5,
+                    text: 'Qualidade surpreendente pelo preco. Ja e a segunda vez que compro.',
+                    image: '',
+                    date: '12-01-26 09:15'
+                },
+                {
+                    id: 'rev_default_3',
+                    name: 'Ana Paula',
+                    rating: 4,
+                    text: 'Muito bom! Entrega rapida e produto conforme anunciado.',
+                    image: '',
+                    date: '10-01-26 18:47'
+                }
+            ]
+        };
 
         function getFormData() {
             const title = document.getElementById('product-title').value;
@@ -1645,28 +1531,44 @@
                 document.getElementById('product-slug').value = slug;
             }
 
+            const priceOriginal = document.getElementById('product-price-original').value;
+            const pricePromo = document.getElementById('product-price-promo').value;
+            
+            // Calcular desconto automaticamente
+            let discount = '';
+            if (priceOriginal && pricePromo) {
+                const discountPercent = Math.round(((parseFloat(priceOriginal) - parseFloat(pricePromo)) / parseFloat(priceOriginal)) * 100);
+                discount = discountPercent + '%';
+            }
+
+            // Calcular valor da parcela
+            let installmentValue = '';
+            if (pricePromo) {
+                installmentValue = 'R$ ' + (parseFloat(pricePromo) / 3).toFixed(2);
+            }
+
             return {
                 slug,
-                status: document.getElementById('product-status').value,
+                status: 'active',
                 title,
-                priceOriginal: document.getElementById('product-price-original').value,
-                pricePromo: document.getElementById('product-price-promo').value,
-                discount: document.getElementById('product-discount').value,
-                installments: document.getElementById('product-installments').value,
-                installmentValue: document.getElementById('product-installment-value').value,
-                sold: document.getElementById('product-sold').value,
+                priceOriginal: priceOriginal,
+                pricePromo: pricePromo,
+                discount: discount,
+                installments: DEFAULT_VALUES.installments,
+                installmentValue: installmentValue,
+                sold: DEFAULT_VALUES.sold,
                 checkoutUrl: document.getElementById('product-checkout').value,
-                descTitle: document.getElementById('product-desc-title').value,
+                descTitle: title,
                 description: document.getElementById('product-description').value,
-                specs: document.getElementById('product-specs').value,
-                idealFor: document.getElementById('product-ideal').value,
-                usage: document.getElementById('product-usage').value,
-                includes: document.getElementById('product-includes').value,
-                sellerLogo: document.getElementById('seller-logo').value,
-                sellerName: document.getElementById('seller-name').value,
-                sellerLocation: document.getElementById('seller-location').value,
+                specs: '',
+                idealFor: '',
+                usage: '',
+                includes: '',
+                sellerLogo: DEFAULT_VALUES.sellerLogo,
+                sellerName: DEFAULT_VALUES.sellerName,
+                sellerLocation: DEFAULT_VALUES.sellerLocation,
                 images: productImages,
-                reviews: productReviews
+                reviews: DEFAULT_VALUES.reviews
             };
         }
 
@@ -1674,12 +1576,12 @@
             const data = getFormData();
             
             if (!data.title) {
-                showToast('Titulo e obrigatorio!', true);
+                showToast('Nome do produto e obrigatorio!', true);
                 return;
             }
 
-            if (!data.slug) {
-                showToast('Slug e obrigatorio!', true);
+            if (!data.pricePromo) {
+                showToast('Preco promocional e obrigatorio!', true);
                 return;
             }
 
@@ -1688,7 +1590,11 @@
                 return;
             }
 
-            data.status = 'active';
+            // Se nao tiver imagem, usar uma imagem padrao
+            if (productImages.length === 0) {
+                productImages[0] = 'images/empty-placeholder.png';
+                data.images = productImages;
+            }
             
             try {
                 await saveProductData(data);
@@ -1700,21 +1606,8 @@
         }
 
         async function saveDraft() {
-            const data = getFormData();
-            
-            if (!data.title) {
-                showToast('Titulo e obrigatorio!', true);
-                return;
-            }
-
-            data.status = 'draft';
-            
-            try {
-                await saveProductData(data);
-                showToast('Rascunho salvo com sucesso!');
-            } catch (error) {
-                showToast('Erro ao salvar: ' + error.message, true);
-            }
+            // Funcao mantida para compatibilidade
+            await saveProduct();
         }
 
         async function saveProductData(data) {
@@ -1753,21 +1646,20 @@
         // =====================
 
         function initImagesGrid() {
-            const container = document.getElementById('images-container');
-            container.innerHTML = '';
-
-            for (let i = 0; i < 6; i++) {
-                const imgUrl = productImages[i] || '';
-                container.innerHTML += `
-                    <div class="image-upload-box" data-index="${i}" onclick="promptImageUrl(${i})">
-                        ${imgUrl ? `
-                            <img src="${imgUrl}" alt="Imagem ${i+1}">
-                            <button class="remove-img" onclick="event.stopPropagation(); removeImage(${i})">×</button>
-                        ` : `
-                            <span class="upload-icon">📷</span>
-                            <span class="upload-text">Imagem ${i+1}</span>
-                        `}
-                    </div>
+            const container = document.getElementById('main-image-box');
+            if (!container) return;
+            
+            const imgUrl = productImages[0] || '';
+            
+            if (imgUrl) {
+                container.innerHTML = `
+                    <img src="${imgUrl}" alt="Imagem do produto">
+                    <button class="remove-img" onclick="event.stopPropagation(); removeImage(0)">×</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <span class="upload-icon">📷</span>
+                    <span class="upload-text">Clique para adicionar</span>
                 `;
             }
         }
@@ -1775,7 +1667,7 @@
         function promptImageUrl(index) {
             const url = prompt('Cole a URL da imagem:');
             if (url) {
-                productImages[index] = url;
+                productImages[0] = url;
                 initImagesGrid();
             }
         }
@@ -1789,15 +1681,7 @@
                 return;
             }
 
-            const emptyIndex = productImages.findIndex((img, i) => !img && i < 6);
-            const index = emptyIndex !== -1 ? emptyIndex : productImages.length;
-            
-            if (index >= 6) {
-                showToast('Maximo de 6 imagens', true);
-                return;
-            }
-
-            productImages[index] = url;
+            productImages[0] = url;
             input.value = '';
             initImagesGrid();
             showToast('Imagem adicionada!');
@@ -1819,19 +1703,8 @@
                 return;
             }
 
-            // Check if we have space
-            const emptyIndex = productImages.findIndex((img, i) => !img && i < 6);
-            const index = emptyIndex !== -1 ? emptyIndex : productImages.length;
-            
-            if (index >= 6) {
-                showToast('Maximo de 6 imagens', true);
-                return;
-            }
-
             // Show upload status
             const statusEl = document.getElementById('upload-status');
-            const uploadBtn = document.getElementById('upload-btn');
-            uploadBtn.disabled = true;
             statusEl.textContent = 'Enviando...';
             statusEl.style.color = 'var(--warning)';
 
@@ -1850,7 +1723,7 @@
                     throw new Error(result.details || result.error || 'Upload failed');
                 }
 
-                productImages[index] = result.url;
+                productImages[0] = result.url;
                 initImagesGrid();
                 showToast('Imagem enviada com sucesso!');
                 statusEl.textContent = '';
@@ -1860,119 +1733,23 @@
                 statusEl.textContent = 'Erro no upload';
                 statusEl.style.color = 'var(--danger)';
             } finally {
-                uploadBtn.disabled = false;
                 event.target.value = '';
             }
         }
 
         function removeImage(index) {
-            productImages.splice(index, 1);
+            productImages = [];
             initImagesGrid();
         }
 
         // =====================
-        // Reviews Management
+        // Reviews - Usando valores padrao
         // =====================
-
-        function addReview() {
-            productReviews.push({
-                id: 'rev_' + Date.now(),
-                name: '',
-                rating: 5,
-                text: '',
-                image: '',
-                date: new Date().toLocaleDateString('pt-BR')
-            });
-            renderReviews();
-        }
-
-        function removeReview(id) {
-            productReviews = productReviews.filter(r => r.id !== id);
-            renderReviews();
-        }
-
-        function updateReview(id, field, value) {
-            const review = productReviews.find(r => r.id === id);
-            if (review) {
-                review[field] = value;
-            }
-        }
-
-        function setRating(id, rating) {
-            updateReview(id, 'rating', rating);
-            renderReviews();
-        }
-
-        function renderReviews() {
-            const container = document.getElementById('reviews-container');
-            
-            if (productReviews.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">Nenhuma avaliacao adicionada</p>';
-                return;
-            }
-
-            container.innerHTML = productReviews.map(r => `
-                <div class="review-item">
-                    <button class="remove-review" onclick="removeReview('${r.id}')">Remover</button>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Nome do Cliente</label>
-                            <input type="text" class="form-control" value="${r.name}" 
-                                   onchange="updateReview('${r.id}', 'name', this.value)" placeholder="Jose Silva">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Data</label>
-                            <input type="text" class="form-control" value="${r.date}" 
-                                   onchange="updateReview('${r.id}', 'date', this.value)" placeholder="26-09-24 8:36">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Avaliacao</label>
-                        <div class="stars-input">
-                            ${[1,2,3,4,5].map(i => `
-                                <button type="button" class="star-btn ${i <= r.rating ? 'active' : ''}" 
-                                        onclick="setRating('${r.id}', ${i})">★</button>
-                            `).join('')}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Texto da Avaliacao</label>
-                        <textarea class="form-control" onchange="updateReview('${r.id}', 'text', this.value)" 
-                                  placeholder="Excelente produto...">${r.text}</textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Imagem da Avaliacao (URL)</label>
-                        <input type="url" class="form-control" value="${r.image || ''}" 
-                               onchange="updateReview('${r.id}', 'image', this.value)" 
-                               placeholder="https://exemplo.com/foto.jpg">
-                    </div>
-                </div>
-            `).join('');
-        }
+        // As avaliacoes sao definidas automaticamente em DEFAULT_VALUES
 
         // =====================
-        // Price Calculations
+        // Price Calculations - Automatico no getFormData
         // =====================
-
-        function calculateDiscount() {
-            const original = parseFloat(document.getElementById('product-price-original').value) || 0;
-            const promo = parseFloat(document.getElementById('product-price-promo').value) || 0;
-            const installments = parseInt(document.getElementById('product-installments').value) || 1;
-
-            if (original > 0 && promo > 0) {
-                const discount = Math.round(((original - promo) / original) * 100);
-                document.getElementById('product-discount').value = discount + '%';
-            }
-
-            if (promo > 0 && installments > 0) {
-                const installmentValue = (promo / installments).toFixed(2);
-                document.getElementById('product-installment-value').value = 'R$ ' + installmentValue;
-            }
-        }
 
         // =====================
         // Import/Export
@@ -2047,10 +1824,6 @@
         // =====================
         // Event Listeners
         // =====================
-
-        document.getElementById('product-price-original').addEventListener('input', calculateDiscount);
-        document.getElementById('product-price-promo').addEventListener('input', calculateDiscount);
-        document.getElementById('product-installments').addEventListener('input', calculateDiscount);
 
         document.getElementById('product-title').addEventListener('input', function() {
             if (!document.getElementById('product-slug').value) {

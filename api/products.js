@@ -1,15 +1,35 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL);
+// Check if DATABASE_URL is configured
+if (!process.env.DATABASE_URL) {
+  console.error('DATABASE_URL environment variable is not set');
+}
+
+let sql;
+try {
+  sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
+} catch (e) {
+  console.error('Failed to initialize Neon connection:', e);
+  sql = null;
+}
 
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Check database connection
+  if (!sql) {
+    return res.status(500).json({ 
+      error: 'Database not configured',
+      details: 'DATABASE_URL environment variable is not set. Please configure it in Vercel project settings.'
+    });
   }
 
   try {
@@ -27,7 +47,20 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: 'Internal server error', details: error.message });
+    
+    // Check for specific database errors
+    let errorMessage = 'Internal server error';
+    let errorDetails = error.message;
+    
+    if (error.message && error.message.includes('relation "products" does not exist')) {
+      errorMessage = 'Database table not found';
+      errorDetails = 'The "products" table does not exist. Please run the CREATE TABLE SQL script in your Neon database.';
+    } else if (error.message && error.message.includes('connection')) {
+      errorMessage = 'Database connection error';
+      errorDetails = 'Could not connect to the database. Please check your DATABASE_URL configuration.';
+    }
+    
+    return res.status(500).json({ error: errorMessage, details: errorDetails });
   }
 }
 

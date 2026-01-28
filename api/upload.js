@@ -11,9 +11,18 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Check if BLOB_READ_WRITE_TOKEN is configured
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return res.status(500).json({ 
+      error: 'Storage not configured',
+      details: 'BLOB_READ_WRITE_TOKEN environment variable is not set. Please configure it in Vercel project settings.'
+    });
   }
 
   if (req.method === 'POST') {
